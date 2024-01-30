@@ -1,6 +1,7 @@
 from flask import Flask, request, render_template, abort
 from datetime import datetime
 from sys import stderr
+from html import escape
 import json, hashlib, os, redis, ipaddress
 
 
@@ -19,9 +20,18 @@ with open("db/users.json", "r") as file:
 redis_host = os.environ.get("REDIS_HOST", "localhost")
 redis_client = redis.Redis(host=redis_host, port=6379, db=0)
 
-# Define the rate limit parameters
-RATE_LIMIT_MAX_REQUESTS = 3  # requests
-RATE_LIMIT_WINDOW = 60  # seconds
+# validate rate limit parameters
+RATE_LIMIT_MAX_REQUESTS = int(os.environ.get("RATE_LIMIT_REQUESTS", "3"))
+RATE_LIMIT_WINDOW = int(os.environ.get("RATE_LIMIT_WINDOW", "60"))
+if RATE_LIMIT_MAX_REQUESTS <= 0:
+    RATE_LIMIT_MAX_REQUESTS = 3
+if RATE_LIMIT_WINDOW <= 0:
+    RATE_LIMIT_WINDOW = 60
+
+# knockd timeout (for ui pruposes)
+TIMEOUT = int(os.environ.get("TIMEOUT", "1800"))
+if TIMEOUT <= 0:
+    TIMEOUT = 1800
 
 # Define a dictionary to store the request counts for each IP address
 request_counts = {}
@@ -50,7 +60,8 @@ def login():
             f"You have exceeded the rate limit of {RATE_LIMIT_MAX_REQUESTS} requests per {RATE_LIMIT_WINDOW} seconds",
         )
 
-    message = ""
+    error = ""
+    success = ""
     if request.method == "POST":
         username = request.form["username"]
         password = request.form["password"]
@@ -61,13 +72,13 @@ def login():
         # Verify username and password
         if username in users and users[username] == hashed_password:
             debug(f"auth-success user={username} addr={ip_address}")
-            message = "Login successful."
+            success = escape(ip_address)
             add_ip_to_ipset(ip_address)
         else:
             debug(f"auth-fail user={username} addr={ip_address}")
-            message = "Login failed!"
+            error = "Login failed!"
 
-    return render_template("form.html", message=message)
+    return render_template("form.html", success=success, error=error, timeout=TIMEOUT)
 
 
 def add_ip_to_ipset(ip_address):

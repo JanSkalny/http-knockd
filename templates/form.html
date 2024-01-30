@@ -1,14 +1,26 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Login Page</title>
+    <title>Login Form</title>
 </head>
 <body>
-    <form method="POST">
-        Username: <input type="text" name="username"><br>
-        Password: <input type="password" name="password"><br>
+
+{% if success %}
+    <p>Users from {{ success }} can initiate connections...</p>
+    <meta http-equiv="refresh" content="{{ timeout|int }};url=/" />
+{% elif error %}
+    <p>{{ error }}</p>
+{% endif %}
+
+{% if not success %}
+    <form action="/" method="post">
+        <label for="username">Username:</label>
+        <input type="text" name="username" id="username" required><br>
+        <label for="password">Password:</label>
+        <input type="password" name="password" id="password" required><br>
         <input type="submit" value="Login">
     </form>
-    <p>{{ message }}</p>
+{% endif %}
+
 </body>
 </html>

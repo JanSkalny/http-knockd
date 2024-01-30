@@ -46,6 +46,7 @@ services:
     environment:
       REDIS_HOST: "redis"
       LETSENCRYPT_HOST: "${HOSTNAME}"
+      TIMEOUT: "${TIMEOUT}"
       VIRTUAL_HOST: "${HOSTNAME}"
       VIRTUAL_PORT: 8000
     depends_on:

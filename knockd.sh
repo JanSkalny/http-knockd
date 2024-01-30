@@ -3,8 +3,13 @@
 CHANNEL="knockd"
 IPSET_LIST="KNOCK"
 
+if [ -f ".env" ]; then
+    export $(grep -E '^TIMEOUT=' .env | xargs)
+fi
+[ -z "${TIMEOUT}" ] && TIMEOUT=1800
+
 # Create IPSET list if it doesn't exist
-ipset create $IPSET_LIST hash:ip timeout 1800 -exist
+ipset create $IPSET_LIST hash:ip timeout $TIMEOUT -exist
 
 # Function to validate IPv4 addresses
 is_valid_ipv4() {

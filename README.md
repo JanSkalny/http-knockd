@@ -59,7 +59,11 @@ docker-compose restart app
 ## Nicer login form
 1. chatgpt:
 ```
-be brief, single file, code only. html login form with css. no javascript. post username and password and displays success or failure from {{ message }}.
+be brief, single html file, code only.
+login form with css. post username and password to /
+jinja success or error variables.
+on success, display "Users from {{ success }} can initiate connections..." message and after {{ timeout }} seconds return to login dialog.
+on error, display {{ error }} message.
 ```
 2. modify templates/form.html
 3. re-build app image
