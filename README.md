@@ -50,11 +50,10 @@ see JanSkalny/ansible-roles-common/http-knockd
 ```
 pw=$(openssl rand -base64 16 | tr -d '+-/='); echo "pw: $pw"; echo -n $pw | sha256sum
 ```
-2. add user to `db/users.json` file (dict) and validate via `jq . db/users.json`
-3. restart app container
-```
-docker-compose restart app
-```
+2. add user to `db/users.json` file (dict)
+3. validate via `jq . db/users.json`
+
+restart of app container is NOT needed
 
 ## Nicer login form
 1. chatgpt:

@@ -12,10 +12,6 @@ def debug(*messages):
 
 app = Flask(__name__)
 
-# Load users data
-with open("db/users.json", "r") as file:
-    users = json.load(file)
-
 # Connect to redis
 redis_host = os.environ.get("REDIS_HOST", "localhost")
 redis_client = redis.Redis(host=redis_host, port=6379, db=0)
@@ -59,6 +55,10 @@ def login():
             429,
             f"You have exceeded the rate limit of {RATE_LIMIT_MAX_REQUESTS} requests per {RATE_LIMIT_WINDOW} seconds",
         )
+
+    # Load users data
+    with open("db/users.json", "r") as file:
+        users = json.load(file)
 
     error = ""
     success = ""
