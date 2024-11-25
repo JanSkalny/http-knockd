@@ -1,3 +1,4 @@
 .env
 *.sw*
 db/users.json
+.DS_Store
